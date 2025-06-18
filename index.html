@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity News Hub</title>
+    <style>
+        :root {
+            --primary-color: #0a0f1f; /* Dark blue */
+            --secondary-color: #1a233a;
+            --accent-color: #00c6ff; /* Bright blue for accents */
+            --text-color: #e0e0e0;
+            --card-bg: #1f2947;
+            --border-color: #30395e;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --max-width: 1200px;
+            --card-shadow: 0 4px 15px rgba(0, 198, 255, 0.1);
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--secondary-color);
+            color: var(--accent-color);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        header p {
+            margin: 0.25rem 0 0;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        main {
+            flex-grow: 1;
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        #news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 198, 255, 0.2);
+        }
+
+        .news-card h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--accent-color);
+        }
+
+        .news-card h2 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .news-card h2 a:hover {
+            text-decoration: underline;
+        }
+
+        .news-card .meta {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+        }
+        .news-card .meta span {
+            margin-right: 10px;
+        }
+        .news-card .meta .source {
+            font-weight: bold;
+            color: #c0c0c0;
+        }
+
+        .news-card .description {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+            overflow: hidden; /* For potential long descriptions */
+        }
+        .news-card .description p {
+            margin-top: 0;
+            margin-bottom: 0.5em;
+        }
+        .news-card .description img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-top: 0.5em;
+        }
+
+
+        .read-more {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.6rem 1.2rem;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+            margin-top: auto; /* Pushes to bottom if card content is short */
+        }
+
+        .read-more:hover {
+            background-color: #00a5d9;
+        }
+
+        .loader, .error-message {
+            grid-column: 1 / -1; /* Span all columns */
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 2rem;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+        }
+        .error-message {
+            color: #ff6b6b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background-color: var(--secondary-color);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+        footer p {
+            margin: 0.3rem 0;
+        }
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            #news-container {
+                grid-template-columns: 1fr; /* Single column on smaller screens */
+            }
+            .news-card {
+                padding: 1rem;
+            }
+            .news-card h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cybersecurity & Breach News</h1>
+        <p>Your daily digest of cyber threats and intelligence</p>
+    </header>
+
+    <main>
+        <div id="news-container">
+            <div class="loader">Loading news... Please wait.</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Aggregated from various RSS feeds. Content belongs to respective owners.</p>
+        <p>Note: This page uses a public CORS proxy (<a href="https://allorigins.win/" target="_blank" rel="noopener noreferrer">allorigins.win</a>) to fetch RSS feeds.</p>
+        <p>&copy; <span id="currentYear"></span> Cybersecurity News Hub</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const newsContainer = document.getElementById('news-container');
+        const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+        const feeds = [
+            { name: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews" },
+            { name: "Bleeping Computer", url: "https://www.bleepingcomputer.com/feed/" },
+            { name: "Krebs on Security", url: "https://krebsonsecurity.com/feed/" },
+            { name: "Dark Reading", url: "http://www.darkreading.com/rss_simple.asp" },
+            { name: "Threatpost", url: "https://threatpost.com/feed/" },
+            { name: "Naked Security (Sophos)", url: "https://nakedsecurity.sophos.com/feed/" }
+        ];
+
+        async function fetchFeed(feed) {
+            try {
+                const response = await fetch(`${CORS_PROXY}${encodeURIComponent(feed.url)}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${feed.name}: ${response.statusText}`);
+                }
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(text, "application/xml");
+                
+                const items = [];
+                xml.querySelectorAll("item, entry").forEach(itemNode => {
+                    const title = itemNode.querySelector("title")?.textContent || "No title";
+                    const link = itemNode.querySelector("link")?.textContent || itemNode.querySelector("link[href]")?.getAttribute('href') || "#";
+                    let pubDateStr = itemNode.querySelector("pubDate")?.textContent || itemNode.querySelector("published")?.textContent;
+                    const descriptionNode = itemNode.querySelector("description") || itemNode.querySelector("content") || itemNode.querySelector("summary");
+                    let description = descriptionNode?.textContent || "No description available.";
+
+                    // Attempt to clean up description and limit length
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = description; // Allow some HTML, but be mindful of XSS if not controlled
+                    
+                    // Remove script and style tags for security
+                    tempDiv.querySelectorAll('script, style').forEach(el => el.remove());
+                    
+                    let cleanDescription = tempDiv.innerHTML; // Use innerHTML to preserve some formatting
+                    const MAX_DESC_LENGTH = 300; // Max characters for description snippet
+                    if (tempDiv.textContent.length > MAX_DESC_LENGTH) {
+                         // Create a snippet from textContent to avoid cutting HTML tags mid-way
+                        let snippet = tempDiv.textContent.substring(0, MAX_DESC_LENGTH).trim();
+                        // Try to end on a word boundary
+                        snippet = snippet.substring(0, Math.min(snippet.length, snippet.lastIndexOf(" "))) + "...";
+                        // If the original description was mostly HTML, this might not be ideal.
+                        // A more robust solution would parse HTML and truncate intelligently.
+                        // For now, we'll use the text snippet if HTML is too complex to truncate.
+                        // A simple approach for HTML snippet:
+                        if (description.length > MAX_DESC_LENGTH * 1.5) { // Heuristic: if raw HTML is much longer
+                            cleanDescription = snippet;
+                        } else if (cleanDescription.length > MAX_DESC_LENGTH * 1.5) {
+                             // If after cleaning, it's still too long, use the text snippet
+                            cleanDescription = snippet;
+                        }
+                    }
+
+
+                    items.push({
+                        title,
+                        link,
+                        pubDate: pubDateStr ? new Date(pubDateStr) : new Date(0), // Fallback date
+                        description: cleanDescription,
+                        source: feed.name
+                    });
+                });
+                return items;
+            } catch (error) {
+                console.error(`Error fetching feed ${feed.name}:`, error);
+                newsContainer.innerHTML += `<div class="error-message">Could not load news from ${feed.name}. ${error.message}</div>`;
+                return []; // Return empty array on error for this feed
+            }
+        }
+
+        function displayNews(items) {
+            // Sort by date, newest first
+            items.sort((a, b) => b.pubDate - a.pubDate);
+
+            // Clear loader
+            const loader = newsContainer.querySelector('.loader');
+            if (loader) loader.remove();
+
+            if (items.length === 0 && newsContainer.children.length === 0) {
+                 newsContainer.innerHTML = '<div class="error-message">No news items could be loaded. Please try again later.</div>';
+                 return;
+            }
+            
+            items.forEach(item => {
+                const card = document.createElement('article');
+                card.className = 'news-card';
+
+                const title = document.createElement('h2');
+                const link = document.createElement('a');
+                link.href = item.link;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = item.title;
+                title.appendChild(link);
+
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                const sourceSpan = document.createElement('span');
+                sourceSpan.className = 'source';
+                sourceSpan.textContent = `Source: ${item.source}`;
+                const dateSpan = document.createElement('span');
+                dateSpan.textContent = `Date: ${item.pubDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}`;
+                meta.appendChild(sourceSpan);
+                meta.appendChild(dateSpan);
+                
+                const descriptionDiv = document.createElement('div');
+                descriptionDiv.className = 'description';
+                descriptionDiv.innerHTML = item.description; // Use innerHTML as we've "cleaned" it
+
+                const readMoreLink = document.createElement('a');
+                readMoreLink.className = 'read-more';
+                readMoreLink.href = item.link;
+                readMoreLink.target = "_blank";
+                readMoreLink.rel = "noopener noreferrer";
+                readMoreLink.textContent = "Read More";
+
+                card.appendChild(title);
+                card.appendChild(meta);
+                card.appendChild(descriptionDiv);
+                card.appendChild(readMoreLink);
+                newsContainer.appendChild(card);
+            });
+        }
+
+        async function loadAllFeeds() {
+            const allItems = [];
+            const promises = feeds.map(feed => fetchFeed(feed));
+            
+            const results = await Promise.all(promises);
+            results.forEach(items => allItems.push(...items));
+            
+            displayNews(allItems);
+        }
+
+        loadAllFeeds();
+    </script>
+</body>
+</html>
