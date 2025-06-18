@@ -211,76 +211,77 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         const newsContainer = document.getElementById('news-container');
-        const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+        // List of CORS proxies to try in order
+        const CORS_PROXIES = [
+            url => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`,
+            url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        ];
 
         const feeds = [
             { name: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews" },
             { name: "Bleeping Computer", url: "https://www.bleepingcomputer.com/feed/" },
             { name: "Krebs on Security", url: "https://krebsonsecurity.com/feed/" },
-            { name: "Dark Reading", url: "http://www.darkreading.com/rss_simple.asp" },
+            { name: "Dark Reading", url: "https://www.darkreading.com/rss_simple.asp" },
             { name: "Threatpost", url: "https://threatpost.com/feed/" },
             { name: "Naked Security (Sophos)", url: "https://nakedsecurity.sophos.com/feed/" }
         ];
 
         async function fetchFeed(feed) {
-            try {
-                const response = await fetch(`${CORS_PROXY}${encodeURIComponent(feed.url)}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch ${feed.name}: ${response.statusText}`);
-                }
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(text, "application/xml");
-                
-                const items = [];
-                xml.querySelectorAll("item, entry").forEach(itemNode => {
-                    const title = itemNode.querySelector("title")?.textContent || "No title";
-                    const link = itemNode.querySelector("link")?.textContent || itemNode.querySelector("link[href]")?.getAttribute('href') || "#";
-                    let pubDateStr = itemNode.querySelector("pubDate")?.textContent || itemNode.querySelector("published")?.textContent;
-                    const descriptionNode = itemNode.querySelector("description") || itemNode.querySelector("content") || itemNode.querySelector("summary");
-                    let description = descriptionNode?.textContent || "No description available.";
-
-                    // Attempt to clean up description and limit length
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = description; // Allow some HTML, but be mindful of XSS if not controlled
-                    
-                    // Remove script and style tags for security
-                    tempDiv.querySelectorAll('script, style').forEach(el => el.remove());
-                    
-                    let cleanDescription = tempDiv.innerHTML; // Use innerHTML to preserve some formatting
-                    const MAX_DESC_LENGTH = 300; // Max characters for description snippet
-                    if (tempDiv.textContent.length > MAX_DESC_LENGTH) {
-                         // Create a snippet from textContent to avoid cutting HTML tags mid-way
-                        let snippet = tempDiv.textContent.substring(0, MAX_DESC_LENGTH).trim();
-                        // Try to end on a word boundary
-                        snippet = snippet.substring(0, Math.min(snippet.length, snippet.lastIndexOf(" "))) + "...";
-                        // If the original description was mostly HTML, this might not be ideal.
-                        // A more robust solution would parse HTML and truncate intelligently.
-                        // For now, we'll use the text snippet if HTML is too complex to truncate.
-                        // A simple approach for HTML snippet:
-                        if (description.length > MAX_DESC_LENGTH * 1.5) { // Heuristic: if raw HTML is much longer
-                            cleanDescription = snippet;
-                        } else if (cleanDescription.length > MAX_DESC_LENGTH * 1.5) {
-                             // If after cleaning, it's still too long, use the text snippet
-                            cleanDescription = snippet;
-                        }
+            let lastError = null;
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const response = await fetch(proxy(feed.url));
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch ${feed.name}: ${response.statusText}`);
                     }
-
-
-                    items.push({
-                        title,
-                        link,
-                        pubDate: pubDateStr ? new Date(pubDateStr) : new Date(0), // Fallback date
-                        description: cleanDescription,
-                        source: feed.name
+                    const text = await response.text();
+                    // Detect HTML error page (not XML)
+                    if (text.trim().startsWith('<!DOCTYPE html') || text.trim().startsWith('<html')) {
+                        throw new Error(`Feed returned HTML instead of XML (possible proxy or site block)`);
+                    }
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(text, "application/xml");
+                    if (xml.querySelector('parsererror')) {
+                        throw new Error(`Invalid XML from ${feed.name}`);
+                    }
+                    const items = [];
+                    xml.querySelectorAll("item, entry").forEach(itemNode => {
+                        const title = itemNode.querySelector("title")?.textContent || "No title";
+                        const link = itemNode.querySelector("link")?.textContent || itemNode.querySelector("link[href]")?.getAttribute('href') || "#";
+                        let pubDateStr = itemNode.querySelector("pubDate")?.textContent || itemNode.querySelector("published")?.textContent;
+                        const descriptionNode = itemNode.querySelector("description") || itemNode.querySelector("content") || itemNode.querySelector("summary");
+                        let description = descriptionNode?.textContent || "No description available.";
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = description;
+                        tempDiv.querySelectorAll('script, style').forEach(el => el.remove());
+                        let cleanDescription = tempDiv.innerHTML;
+                        const MAX_DESC_LENGTH = 300;
+                        if (tempDiv.textContent.length > MAX_DESC_LENGTH) {
+                            let snippet = tempDiv.textContent.substring(0, MAX_DESC_LENGTH).trim();
+                            snippet = snippet.substring(0, Math.min(snippet.length, snippet.lastIndexOf(" "))) + "...";
+                            if (description.length > MAX_DESC_LENGTH * 1.5) {
+                                cleanDescription = snippet;
+                            } else if (cleanDescription.length > MAX_DESC_LENGTH * 1.5) {
+                                cleanDescription = snippet;
+                            }
+                        }
+                        items.push({
+                            title,
+                            link,
+                            pubDate: pubDateStr ? new Date(pubDateStr) : new Date(0),
+                            description: cleanDescription,
+                            source: feed.name
+                        });
                     });
-                });
-                return items;
-            } catch (error) {
-                console.error(`Error fetching feed ${feed.name}:`, error);
-                newsContainer.innerHTML += `<div class="error-message">Could not load news from ${feed.name}. ${error.message}</div>`;
-                return []; // Return empty array on error for this feed
+                    return items;
+                } catch (error) {
+                    lastError = error;
+                }
             }
+            // Only show one error message per feed
+            console.error(`Error fetching feed ${feed.name}:`, lastError);
+            newsContainer.innerHTML += `<div class=\"error-message\">Could not load news from ${feed.name}. ${lastError ? lastError.message : 'Unknown error.'}</div>`;
+            return [];
         }
 
         function displayNews(items) {
