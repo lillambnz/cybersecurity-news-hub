@@ -39,6 +39,10 @@ const FEEDS = [
   { name: 'Google Project Zero', url: 'https://googleprojectzero.blogspot.com/feeds/posts/default?alt=rss' },
   { name: 'SANS ISC Diary', url: 'https://isc.sans.edu/rssfeed.xml' },
   { name: 'GitHub Security Blog', url: 'https://github.blog/category/security/feed/' },
+
+  // government advisories (availability may vary by region/CORS)
+  { name: 'CISA Current Activity', url: 'https://www.cisa.gov/sites/default/files/feeds/current_activity.xml' },
+  { name: 'CISA Alerts', url: 'https://www.cisa.gov/sites/default/files/feeds/alerts.xml' },
 ];
 
 const CLASSIFY = {
@@ -313,7 +317,8 @@ async function loadAll() {
   initThemeToggle();
   initControls();
   const results = await Promise.all(FEEDS.map(fetchFeed));
-  state.allItems = results.flat();
+  const kevItems = await fetchKEV();
+  state.allItems = results.flat().concat(kevItems);
   renderTrending();
   state.page = 0;
   applyAndRender();
@@ -357,4 +362,48 @@ function copyBrief() {
   if (!elC) return;
   const text = elC.innerText || elC.textContent || '';
   navigator.clipboard.writeText(text).then(()=> toast('Daily brief copied')).catch(()=>toast('Copy failed'));
+}
+
+// --------- KEV integration (CISA Known Exploited Vulnerabilities) ----------
+async function fetchJsonThroughProxies(url) {
+  let lastError;
+  for (const proxy of CORS_PROXIES) {
+    try {
+      const res = await fetch(proxy(url));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const txt = await res.text();
+      // Some proxies may not set JSON headers; parse manually
+      return JSON.parse(txt);
+    } catch (e) { lastError = e; }
+  }
+  console.error('KEV JSON fetch failed', lastError);
+  return null;
+}
+
+async function fetchKEV() {
+  const url = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
+  const data = await fetchJsonThroughProxies(url);
+  if (!data || !Array.isArray(data.vulnerabilities)) return [];
+  // Map KEV entries to items
+  const items = data.vulnerabilities.slice(0, 150).map(v => {
+    const cve = v.cveID || v.cveId || '';
+    const titleBits = [cve, v.vulnerabilityName, v.vendorProject, v.product].filter(Boolean).join(' — ');
+    const link = cve ? `https://nvd.nist.gov/vuln/detail/${encodeURIComponent(cve)}` : 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog';
+    const desc = v.shortDescription || v.description || '';
+    const dateStr = v.dateAdded || v.published ? (v.dateAdded || v.published) : undefined;
+    const due = v.dueDate ? ` Mitigation due: ${v.dueDate}.` : '';
+    const required = v.requiredAction ? ` Required action: ${v.requiredAction}.` : '';
+    const summary = `${desc}${required}${due}`.trim();
+    return {
+      id: link,
+      title: titleBits || (cve ? `${cve}` : 'Known Exploited Vulnerability'),
+      link,
+      pubDate: dateStr ? new Date(dateStr) : new Date(0),
+      description: summary,
+      source: 'CISA KEV',
+      tags: ['CVE', 'KEV'].concat(v.vendorProject ? [v.vendorProject] : []),
+      context: 'threat',
+    };
+  });
+  return items;
 }
