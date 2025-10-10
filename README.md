@@ -10,6 +10,8 @@ Features
 - Share button (Web Share API with clipboard fallback)
 - PWA: manifest + service worker for offline caching of shell assets
 - Basic SEO: meta tags, Open Graph and structured data
+- Internationalization (i18n): language switcher (EN/ES/FR/DE/AR), RTL support, localized dates
+- Embed mode: append `?embed=1` to show a compact widget (no header/footer/brief)
 
 Local Usage
 - Open `index.html` directly in a browser or serve the folder with any static server.
@@ -25,6 +27,7 @@ Project Structure
 - `index.html` — App shell and layout
 - `assets/styles.css` — Theme, layout, components
 - `assets/app.js` — Client logic: fetching, filtering, sorting, bookmarks, trending
+- i18n is inline in `assets/app.js` (`I18N` object). Add locales as needed.
 - `manifest.webmanifest` and `sw.js` — PWA shell
 - `icons/` — App icons (placeholders; replace with real PNGs)
 
@@ -37,4 +40,4 @@ Customization
 - Add/remove sources: edit the `FEEDS` array in `assets/app.js`.
 - Tweak page size (`state.pageSize`) and skeleton count in `buildSkeletons`.
 - Styling is CSS-only; no build step required.
-
+- To embed as a widget on another site, use an iframe: `<iframe src="https://your-domain/index.html?embed=1" width="100%" height="600" style="border:0;">`.

@@ -44,13 +44,21 @@
         <div class="brand">
           <div class="logo" aria-hidden="true">🛡️</div>
           <div class="titles">
-            <h1>Cybersecurity News Hub</h1>
-            <p>Your daily digest of cyber threats and intelligence</p>
+            <h1 id="title">Cybersecurity News Hub</h1>
+            <p id="subtitle">Your daily digest of cyber threats and intelligence</p>
           </div>
         </div>
         <div class="actions">
           <button id="themeToggle" class="btn ghost" aria-label="Toggle theme" title="Toggle theme">🌙</button>
           <a id="bookmarksNav" class="btn" href="#bookmarks" aria-label="View bookmarks">Bookmarks</a>
+          <label class="sr-only" for="langSelect">Language</label>
+          <select id="langSelect" class="lang-select" aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+            <option value="fr">FR</option>
+            <option value="de">DE</option>
+            <option value="ar">AR</option>
+          </select>
         </div>
       </div>
       <nav class="tools container" aria-label="News tools">
@@ -71,7 +79,7 @@
 
     <main id="content" class="container">
       <section id="brief" aria-label="Daily Brief">
-        <h2 class="section-title">Daily Brief</h2>
+        <h2 id="briefTitle" class="section-title">Daily Brief</h2>
         <div class="brief-actions">
           <button id="copyBriefBtn" class="btn ghost" title="Copy brief">Copy Brief</button>
           <button id="regenBriefBtn" class="btn" title="Regenerate brief">Regenerate</button>
@@ -80,12 +88,12 @@
       </section>
 
       <section id="highlights" aria-label="Trending highlights">
-        <h2 class="section-title">Trending Now</h2>
+        <h2 id="highlightsTitle" class="section-title">Trending Now</h2>
         <div id="trendContainer" class="trend-grid"></div>
       </section>
 
       <section aria-label="News feed">
-        <h2 class="section-title">Latest Articles</h2>
+        <h2 id="latestTitle" class="section-title">Latest Articles</h2>
         <div id="news-container" class="card-grid">
           <div class="skeleton-grid" id="skeletonLoader"></div>
         </div>
@@ -95,16 +103,16 @@
       </section>
 
       <section id="bookmarksSection" aria-label="Bookmarked articles" hidden>
-        <h2 class="section-title">Your Bookmarks</h2>
+        <h2 id="bookmarksTitle" class="section-title">Your Bookmarks</h2>
         <div id="bookmarksContainer" class="card-grid-empty"></div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>Aggregated from various RSS feeds. Content belongs to respective owners.</p>
-        <p>Uses public CORS proxies to fetch RSS feeds in the browser.</p>
-        <p>&copy; <span id="currentYear"></span> Cybersecurity News Hub • Created by Sher Abid</p>
+        <p id="footerAttribution">Aggregated from various RSS feeds. Content belongs to respective owners.</p>
+        <p id="footerProxy">Uses public CORS proxies to fetch RSS feeds in the browser.</p>
+        <p id="footerCopyright">&copy; <span id="currentYear"></span> Cybersecurity News Hub • Created by Sher Abid</p>
       </div>
     </footer>
 

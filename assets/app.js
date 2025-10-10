@@ -4,6 +4,65 @@
 const el = (sel, root = document) => root.querySelector(sel);
 const els = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+// --------- i18n ---------
+const I18N = {
+  en: {
+    app: { title: 'Cybersecurity News Hub', subtitle: 'Your daily digest of cyber threats and intelligence' },
+    nav: { bookmarks: 'Bookmarks' },
+    tools: { search_placeholder: 'Search headlines, descriptions, sources...', sort_newest: 'Newest first', sort_oldest: 'Oldest first', sort_source: 'Source A-Z' },
+    sections: { brief: 'Daily Brief', trending: 'Trending Now', latest: 'Latest Articles', bookmarks: 'Your Bookmarks' },
+    buttons: { copy_brief: 'Copy Brief', regenerate: 'Regenerate', load_more: 'Load more', read: 'Read', bookmark: 'Bookmark', share: 'Share' },
+    chip: { threat: 'Threat', defense: 'Defense', intel: 'Intel' },
+    footer: { attribution: 'Aggregated from various RSS feeds. Content belongs to respective owners.', proxy: 'Uses public CORS proxies to fetch RSS feeds in the browser.' }
+  },
+  es: {
+    app: { title: 'Centro de Noticias de Ciberseguridad', subtitle: 'Tu resumen diario de amenazas e inteligencia' },
+    nav: { bookmarks: 'Marcadores' },
+    tools: { search_placeholder: 'Buscar titulares, descripciones, fuentes…', sort_newest: 'Más recientes', sort_oldest: 'Más antiguos', sort_source: 'Fuente A-Z' },
+    sections: { brief: 'Informe Diario', trending: 'Tendencias', latest: 'Artículos Recientes', bookmarks: 'Tus Marcadores' },
+    buttons: { copy_brief: 'Copiar informe', regenerate: 'Regenerar', load_more: 'Cargar más', read: 'Leer', bookmark: 'Guardar', share: 'Compartir' },
+    chip: { threat: 'Amenaza', defense: 'Defensa', intel: 'Inteligencia' },
+    footer: { attribution: 'Agregado de varios RSS. El contenido pertenece a sus propietarios.', proxy: 'Usa proxies CORS públicos para obtener RSS en el navegador.' }
+  },
+  fr: {
+    app: { title: 'Hub des Actualités Cybersécurité', subtitle: 'Votre synthèse quotidienne des menaces et renseignements' },
+    nav: { bookmarks: 'Favoris' },
+    tools: { search_placeholder: 'Rechercher titres, descriptions, sources…', sort_newest: 'Plus récents', sort_oldest: 'Plus anciens', sort_source: 'Source A-Z' },
+    sections: { brief: 'Brief Quotidien', trending: 'Tendance', latest: 'Derniers Articles', bookmarks: 'Vos Favoris' },
+    buttons: { copy_brief: 'Copier le brief', regenerate: 'Régénérer', load_more: 'Voir plus', read: 'Lire', bookmark: 'Enregistrer', share: 'Partager' },
+    chip: { threat: 'Menace', defense: 'Défense', intel: 'Renseignement' },
+    footer: { attribution: 'Agrégé de divers flux RSS. Contenu appartenant à leurs propriétaires.', proxy: 'Utilise des proxys CORS publics pour récupérer les flux RSS.' }
+  },
+  de: {
+    app: { title: 'Cybersecurity News Hub', subtitle: 'Ihr täglicher Überblick zu Bedrohungen und Intelligence' },
+    nav: { bookmarks: 'Lesezeichen' },
+    tools: { search_placeholder: 'Suche in Titeln, Beschreibungen, Quellen…', sort_newest: 'Neueste zuerst', sort_oldest: 'Älteste zuerst', sort_source: 'Quelle A-Z' },
+    sections: { brief: 'Tagesbriefing', trending: 'Im Trend', latest: 'Neueste Artikel', bookmarks: 'Ihre Lesezeichen' },
+    buttons: { copy_brief: 'Brief kopieren', regenerate: 'Neu erstellen', load_more: 'Mehr laden', read: 'Lesen', bookmark: 'Speichern', share: 'Teilen' },
+    chip: { threat: 'Bedrohung', defense: 'Abwehr', intel: 'Intel' },
+    footer: { attribution: 'Aggregiert aus verschiedenen RSS-Feeds. Inhalte gehören den Eigentümern.', proxy: 'Verwendet öffentliche CORS-Proxys, um RSS im Browser abzurufen.' }
+  },
+  ar: {
+    app: { title: 'مركز أخبار الأمن السيبراني', subtitle: 'ملخصك اليومي للتهديدات والاستخبارات' },
+    nav: { bookmarks: 'المحفوظات' },
+    tools: { search_placeholder: 'ابحث في العناوين والأوصاف والمصادر…', sort_newest: 'الأحدث أولاً', sort_oldest: 'الأقدم أولاً', sort_source: 'المصدر A-Z' },
+    sections: { brief: 'الموجز اليومي', trending: 'الرائج الآن', latest: 'أحدث المقالات', bookmarks: 'محفوظاتك' },
+    buttons: { copy_brief: 'نسخ الموجز', regenerate: 'إعادة توليد', load_more: 'تحميل المزيد', read: 'قراءة', bookmark: 'حفظ', share: 'مشاركة' },
+    chip: { threat: 'تهديد', defense: 'دفاع', intel: 'استخبارات' },
+    footer: { attribution: 'تم التجميع من خلاصات RSS مختلفة. المحتوى يعود لمالكيه.', proxy: 'يستخدم بروكسيات CORS عامة لجلب الخلاصات في المتصفح.' }
+  }
+};
+
+const SUPPORTED_LOCALES = Object.keys(I18N);
+let currentLocale = 'en';
+
+function t(path) {
+  const parts = path.split('.');
+  let node = I18N[currentLocale] || I18N.en;
+  for (const p of parts) { node = node?.[p]; if (!node) break; }
+  return node || I18N.en?.[parts[0]]?.[parts[1]] || path;
+}
+
 const state = {
   allItems: [],
   visibleItems: [],
@@ -76,6 +135,42 @@ function initThemeToggle() {
   setTheme(current);
 }
 
+function setLanguage(lang) {
+  currentLocale = SUPPORTED_LOCALES.includes(lang) ? lang : 'en';
+  localStorage.setItem('csnh-lang', currentLocale);
+  document.documentElement.lang = currentLocale;
+  document.documentElement.dir = currentLocale === 'ar' ? 'rtl' : 'ltr';
+  const langSelect = el('#langSelect');
+  if (langSelect) langSelect.value = currentLocale;
+  translateUI();
+  applyAndRender();
+  renderBookmarks();
+  renderBrief(state.allItems);
+}
+
+function translateUI() {
+  const title = el('#title'); if (title) title.textContent = t('app.title');
+  const subtitle = el('#subtitle'); if (subtitle) subtitle.textContent = t('app.subtitle');
+  const bookmarksNav = el('#bookmarksNav'); if (bookmarksNav) bookmarksNav.textContent = t('nav.bookmarks');
+  const search = el('#searchInput'); if (search) search.placeholder = t('tools.search_placeholder');
+  const sort = el('#sortSelect');
+  if (sort) {
+    sort.innerHTML = '';
+    const opts = [ ['newest', t('tools.sort_newest')], ['oldest', t('tools.sort_oldest')], ['source', t('tools.sort_source')] ];
+    for (const [val, label] of opts) { const o = document.createElement('option'); o.value = val; o.textContent = label; sort.appendChild(o); }
+    sort.value = state.sort;
+  }
+  const briefTitle = el('#briefTitle'); if (briefTitle) briefTitle.textContent = t('sections.brief');
+  const highlightsTitle = el('#highlightsTitle'); if (highlightsTitle) highlightsTitle.textContent = t('sections.trending');
+  const latestTitle = el('#latestTitle'); if (latestTitle) latestTitle.textContent = t('sections.latest');
+  const bookmarksTitle = el('#bookmarksTitle'); if (bookmarksTitle) bookmarksTitle.textContent = t('sections.bookmarks');
+  const copyBriefBtn = el('#copyBriefBtn'); if (copyBriefBtn) copyBriefBtn.textContent = t('buttons.copy_brief');
+  const regenBriefBtn = el('#regenBriefBtn'); if (regenBriefBtn) regenBriefBtn.textContent = t('buttons.regenerate');
+  const loadMoreBtn = el('#loadMoreBtn'); if (loadMoreBtn) loadMoreBtn.textContent = t('buttons.load_more');
+  const f1 = el('#footerAttribution'); if (f1) f1.textContent = t('footer.attribution');
+  const f2 = el('#footerProxy'); if (f2) f2.textContent = t('footer.proxy');
+}
+
 function saveBookmarks() {
   localStorage.setItem('csnh-bookmarks', JSON.stringify([...state.bookmarks]));
 }
@@ -93,7 +188,7 @@ async function fetchFeed(feed) {
       const xml = new DOMParser().parseFromString(text, 'application/xml');
       if (xml.querySelector('parsererror')) throw new Error('Invalid XML');
       const items = [];
-      xml.querySelectorAll('item, entry').forEach(node => {
+  xml.querySelectorAll('item, entry').forEach(node => {
         const title = node.querySelector('title')?.textContent?.trim() || 'Untitled';
         const link = node.querySelector('link')?.textContent || node.querySelector('link[href]')?.getAttribute('href') || '#';
         const pubDateStr = node.querySelector('pubDate')?.textContent || node.querySelector('published')?.textContent || node.querySelector('updated')?.textContent;
@@ -159,16 +254,16 @@ function card(item) {
   a.innerHTML = `
     <h3><a href="${item.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
     <div class="meta">
-      <span class="chip ${ctx}">${ctx === 'threat' ? 'Threat' : ctx === 'defense' ? 'Defense' : 'Intel'}</span>
+      <span class="chip ${ctx}">${ctx === 'threat' ? t('chip.threat') : ctx === 'defense' ? t('chip.defense') : t('chip.intel')}</span>
       <span>${escapeHtml(item.source)}</span><span>•</span><span>${formatDate(item.pubDate)}</span>
     </div>
     <div class="desc">${escapeHtml(item.description)}</div>
     <div class="row">
       <div class="tags"></div>
       <div class="actions">
-        <button class="btn icon bookmark" title="Bookmark" aria-label="Bookmark">${isBookmarked(item.link) ? '★' : '☆'}</button>
-        <a class="btn" href="${item.link}" target="_blank" rel="noopener noreferrer">Read</a>
-        <button class="btn ghost icon share" title="Share" aria-label="Share">↗</button>
+        <button class="btn icon bookmark" title="${t('buttons.bookmark')}" aria-label="${t('buttons.bookmark')}">${isBookmarked(item.link) ? '★' : '☆'}</button>
+        <a class="btn" href="${item.link}" target="_blank" rel="noopener noreferrer">${t('buttons.read')}</a>
+        <button class="btn ghost icon share" title="${t('buttons.share')}" aria-label="${t('buttons.share')}">↗</button>
       </div>
     </div>
   `;
@@ -288,7 +383,7 @@ async function shareItem(item) {
   } catch (_) {}
 }
 
-function formatDate(d) { try {return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})} catch { return ''; } }
+function formatDate(d) { try {return new Intl.DateTimeFormat(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' }).format(d);} catch { return ''; } }
 function escapeHtml(s) { return (s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
 
 let toastTimer;
@@ -309,6 +404,10 @@ function initControls() {
   window.addEventListener('hashchange', renderBookmarks);
   el('#regenBriefBtn').addEventListener('click', () => renderBrief(state.allItems));
   el('#copyBriefBtn').addEventListener('click', () => copyBrief());
+  const detected = (localStorage.getItem('csnh-lang') || navigator.language || 'en').slice(0,2).toLowerCase();
+  setLanguage(SUPPORTED_LOCALES.includes(detected) ? detected : 'en');
+  const sel = el('#langSelect');
+  if (sel) sel.addEventListener('change', e => setLanguage(e.target.value));
 }
 
 async function loadAll() {
@@ -316,6 +415,9 @@ async function loadAll() {
   buildSourceFilters();
   initThemeToggle();
   initControls();
+  // Embed mode for easy placement
+  const isEmbed = new URLSearchParams(location.search).get('embed') === '1';
+  if (isEmbed) { document.body.classList.add('embed'); state.pageSize = 6; }
   const results = await Promise.all(FEEDS.map(fetchFeed));
   const kevItems = await fetchKEV();
   state.allItems = results.flat().concat(kevItems);

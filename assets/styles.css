@@ -53,6 +53,8 @@ body {
 .titles h1 { margin: 0; font-size: clamp(1.25rem, 2.5vw, 1.6rem); letter-spacing: .2px; }
 .titles p { margin: .125rem 0 0; color: var(--muted); font-size: .95rem; }
 .actions { display: flex; gap: .5rem; align-items: center; }
+.lang-select { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: .6rem; padding: .45rem .6rem; }
+.lang-select:focus-visible { outline: var(--focus); outline-offset: 2px; }
 
 .tools { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: .75rem; padding-bottom: .75rem; }
 .search input { width: 100%; background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: .75rem; padding: .75rem 1rem; outline: none; box-shadow: var(--shadow); }
@@ -128,3 +130,14 @@ a:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* RTL support */
+[dir="rtl"] body { direction: rtl; }
+[dir="rtl"] .brand { flex-direction: row-reverse; }
+[dir="rtl"] .meta { direction: rtl; }
+[dir="rtl"] .tools { direction: rtl; }
+
+/* Embed mode (index.html?embed=1) for easy placement */
+.embed .site-header, .embed .site-footer, .embed #brief, .embed #bookmarksSection { display: none; }
+.embed .container { max-width: 980px; }
+.embed .card-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
