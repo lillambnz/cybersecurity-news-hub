@@ -64,6 +64,13 @@ body {
 .sort select { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); border-radius: .6rem; padding: .5rem .75rem; }
 
 .section-title { margin: 1.25rem 0 .5rem; font-size: 1.15rem; color: var(--muted); letter-spacing: .3px; font-weight: 600; }
+.brief-actions { display: flex; gap: .5rem; margin: .5rem 0 1rem; }
+.prose { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
+.prose h3 { margin: .6rem 0 .3rem; color: var(--text); }
+.prose p { margin: .4rem 0; color: var(--text); }
+.prose ul { margin: .4rem 0 .8rem 1rem; padding: 0; }
+.prose li { margin: .25rem 0; }
+.prose a { color: var(--accent); }
 .trend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .75rem; }
 .trend { background: var(--panel); border: 1px solid var(--border); border-radius: .9rem; padding: .85rem; box-shadow: var(--shadow); display: flex; gap: .75rem; align-items: center; }
 .trend .rank { font-weight: 700; color: var(--accent); }

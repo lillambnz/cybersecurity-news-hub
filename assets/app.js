@@ -21,10 +21,24 @@ const CORS_PROXIES = [
 ];
 
 const FEEDS = [
+  // existing
   { name: 'The Hacker News', url: 'https://feeds.feedburner.com/TheHackersNews' },
   { name: 'Bleeping Computer', url: 'https://www.bleepingcomputer.com/feed/' },
   { name: 'Krebs on Security', url: 'https://krebsonsecurity.com/feed/' },
   { name: 'Threatpost', url: 'https://threatpost.com/feed/' },
+
+  // reputable, commonly available RSS
+  { name: 'SecurityWeek', url: 'https://www.securityweek.com/feed/' },
+  { name: 'Dark Reading', url: 'https://www.darkreading.com/rss.xml' },
+  { name: 'Ars Technica Security', url: 'https://feeds.arstechnica.com/arstechnica/security' },
+  { name: 'Microsoft Security Blog', url: 'https://www.microsoft.com/en-us/security/blog/feed/' },
+  { name: 'Unit 42 (Palo Alto)', url: 'https://unit42.paloaltonetworks.com/feed/' },
+  { name: 'Cisco Talos', url: 'https://blog.talosintelligence.com/feeds/posts/default?alt=rss' },
+  { name: 'Rapid7 Blog', url: 'https://www.rapid7.com/blog/rss/' },
+  { name: 'CrowdStrike Blog', url: 'https://www.crowdstrike.com/blog/feed/' },
+  { name: 'Google Project Zero', url: 'https://googleprojectzero.blogspot.com/feeds/posts/default?alt=rss' },
+  { name: 'SANS ISC Diary', url: 'https://isc.sans.edu/rssfeed.xml' },
+  { name: 'GitHub Security Blog', url: 'https://github.blog/category/security/feed/' },
 ];
 
 const CLASSIFY = {
@@ -289,6 +303,8 @@ function initControls() {
   el('#sortSelect').addEventListener('change', e => { state.sort = e.target.value; applyAndRender(); });
   el('#loadMoreBtn').addEventListener('click', () => { state.page++; applyAndRender(); });
   window.addEventListener('hashchange', renderBookmarks);
+  el('#regenBriefBtn').addEventListener('click', () => renderBrief(state.allItems));
+  el('#copyBriefBtn').addEventListener('click', () => copyBrief());
 }
 
 async function loadAll() {
@@ -302,6 +318,43 @@ async function loadAll() {
   state.page = 0;
   applyAndRender();
   renderBookmarks();
+  renderBrief(state.allItems);
 }
 
 loadAll();
+
+// --------- Daily Brief generation ----------
+function renderBrief(all) {
+  const elC = el('#briefContent');
+  if (!elC) return;
+  const date = new Date();
+  const items = applySort(applySearch(applyFilters(all)));
+  const byCtx = (ctx, n) => items.filter(i=>i.context===ctx).slice(0,n);
+  const topThreat = byCtx('threat', 6);
+  const topDefense = byCtx('defense', 5);
+  const topIntel = byCtx('intel', 5);
+  const trends = computeTrending(items).slice(0,6);
+  const sourceCounts = [...items.reduce((m,i)=>m.set(i.source,(m.get(i.source)||0)+1), new Map()).entries()].sort((a,b)=>b[1]-a[1]).slice(0,6);
+
+  const section = (title, arr) => arr.length ? `<h3>${title}</h3><ul>` + arr.map(i=>`<li><a href="${i.link}" target="_blank" rel="noopener">${escapeHtml(i.title)}</a> <span class="badge">${escapeHtml(i.source)}</span></li>`).join('') + `</ul>` : '';
+
+  elC.innerHTML = `
+    <h3>Cybersecurity Daily Brief — ${date.toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'})}</h3>
+    <p>A concise roundup of notable incidents, defensive updates, and vulnerability intelligence from trusted sources.</p>
+    ${section('Major Incidents & Threat Activity', topThreat)}
+    ${section('Defensive Updates & Guidance', topDefense)}
+    ${section('Vulnerability & Research Intel', topIntel)}
+    <h3>Key Trends</h3>
+    <p>${trends.map(t=>`<span class="badge">#${escapeHtml(t.label)}</span>`).join(' ') || '—'}</p>
+    <h3>Top Sources Today</h3>
+    <ul>${sourceCounts.map(([s,c])=>`<li>${escapeHtml(s)} — ${c}</li>`).join('')}</ul>
+  `;
+  el('#copyBriefBtn').disabled = items.length === 0;
+}
+
+function copyBrief() {
+  const elC = el('#briefContent');
+  if (!elC) return;
+  const text = elC.innerText || elC.textContent || '';
+  navigator.clipboard.writeText(text).then(()=> toast('Daily brief copied')).catch(()=>toast('Copy failed'));
+}
