@@ -27,6 +27,20 @@ const FEEDS = [
   { name: 'Threatpost', url: 'https://threatpost.com/feed/' },
 ];
 
+const CLASSIFY = {
+  threat: [/hack/i, /breach/i, /ransom/i, /ransomware/i, /exploit/i, /malware/i, /ddos/i, /phishing/i, /attack/i, /compromis/i, /exfiltrat/i, /zero-?day/i, /botnet/i, /data leak/i],
+  defense: [/mitigat/i, /patch/i, /update/i, /secure/i, /defen[cs]e/i, /blue team/i, /detect/i, /edr/i, /mfa/i, /hardening/i, /enforc/i, /encrypt/i],
+  intel: [/advisory/i, /cve/i, /vulnerab/i, /research/i, /intel/i, /report/i, /bulletin/i, /proof[- ]of[- ]concept/i, /poc/i]
+};
+
+function classifyItemText(text) {
+  const t = text.toLowerCase();
+  for (const [label, rules] of Object.entries(CLASSIFY)) {
+    if (rules.some(r => r.test(t))) return label; // first match wins (threat>defense>intel due to key order)
+  }
+  return 'intel';
+}
+
 function setTheme(next) {
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('csnh-theme', next);
@@ -36,9 +50,12 @@ function setTheme(next) {
 function initThemeToggle() {
   const btn = el('#themeToggle');
   btn.addEventListener('click', () => {
-    const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+    const curr = document.documentElement.getAttribute('data-theme') || 'light';
     setTheme(curr === 'dark' ? 'light' : 'dark');
   });
+  // ensure icon reflects current theme on load
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  setTheme(current);
 }
 
 function saveBookmarks() {
@@ -70,6 +87,7 @@ async function fetchFeed(feed) {
         const textOnly = temp.textContent || '';
         const MAX = 320;
         const clipped = textOnly.length > MAX ? textOnly.slice(0, MAX).replace(/\s+\S*$/, '') + '…' : textOnly;
+        const context = classifyItemText(`${title} ${textOnly} ${cats.join(' ')}`);
         items.push({
           id: link,
           title,
@@ -78,6 +96,7 @@ async function fetchFeed(feed) {
           description: clipped,
           source: feed.name,
           tags: cats,
+          context,
         });
       });
       return items;
@@ -117,10 +136,14 @@ function buildSkeletons(n = 9) {
 
 function card(item) {
   const a = document.createElement('article');
-  a.className = 'card';
+  const ctx = item.context || 'intel';
+  a.className = `card card--${ctx}`;
   a.innerHTML = `
     <h3><a href="${item.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
-    <div class="meta"><span>${escapeHtml(item.source)}</span><span>•</span><span>${formatDate(item.pubDate)}</span></div>
+    <div class="meta">
+      <span class="chip ${ctx}">${ctx === 'threat' ? 'Threat' : ctx === 'defense' ? 'Defense' : 'Intel'}</span>
+      <span>${escapeHtml(item.source)}</span><span>•</span><span>${formatDate(item.pubDate)}</span>
+    </div>
     <div class="desc">${escapeHtml(item.description)}</div>
     <div class="row">
       <div class="tags"></div>
@@ -282,4 +305,3 @@ async function loadAll() {
 }
 
 loadAll();
-
