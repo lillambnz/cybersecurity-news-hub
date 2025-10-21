@@ -8,47 +8,47 @@ const els = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const I18N = {
   en: {
     app: { title: 'Cybersecurity News Hub', subtitle: 'Your daily digest of cyber threats and intelligence' },
-    nav: { bookmarks: 'Bookmarks' },
-    tools: { search_placeholder: 'Search headlines, descriptions, sources...', sort_newest: 'Newest first', sort_oldest: 'Oldest first', sort_source: 'Source A-Z' },
-    sections: { brief: 'Daily Brief', trending: 'Trending Now', latest: 'Latest Articles', bookmarks: 'Your Bookmarks' },
+    nav: { bookmarks: 'Bookmarks', ai_security: 'AI Security' },
+    tools: { search_placeholder: 'Search headlines, descriptions, sources...', sort_newest: 'Newest first', sort_oldest: 'Oldest first', sort_source: 'Source A-Z', filter_all: 'All', filter_ai: 'AI Security', filter_threat: 'Threats', filter_defense: 'Defense', filter_intel: 'Intel' },
+    sections: { brief: 'Daily Brief', trending: 'Trending Now', latest: 'Latest Articles', bookmarks: 'Your Bookmarks', ai_security: 'AI Security News' },
     buttons: { copy_brief: 'Copy Brief', regenerate: 'Regenerate', load_more: 'Load more', read: 'Read', bookmark: 'Bookmark', share: 'Share' },
-    chip: { threat: 'Threat', defense: 'Defense', intel: 'Intel' },
+    chip: { threat: 'Threat', defense: 'Defense', intel: 'Intel', ai: 'AI Security' },
     footer: { attribution: 'Aggregated from various RSS feeds. Content belongs to respective owners.', proxy: 'Uses public CORS proxies to fetch RSS feeds in the browser.' }
   },
   es: {
     app: { title: 'Centro de Noticias de Ciberseguridad', subtitle: 'Tu resumen diario de amenazas e inteligencia' },
-    nav: { bookmarks: 'Marcadores' },
-    tools: { search_placeholder: 'Buscar titulares, descripciones, fuentes…', sort_newest: 'Más recientes', sort_oldest: 'Más antiguos', sort_source: 'Fuente A-Z' },
-    sections: { brief: 'Informe Diario', trending: 'Tendencias', latest: 'Artículos Recientes', bookmarks: 'Tus Marcadores' },
+    nav: { bookmarks: 'Marcadores', ai_security: 'Seguridad IA' },
+    tools: { search_placeholder: 'Buscar titulares, descripciones, fuentes…', sort_newest: 'Más recientes', sort_oldest: 'Más antiguos', sort_source: 'Fuente A-Z', filter_all: 'Todo', filter_ai: 'Seguridad IA', filter_threat: 'Amenazas', filter_defense: 'Defensa', filter_intel: 'Inteligencia' },
+    sections: { brief: 'Informe Diario', trending: 'Tendencias', latest: 'Artículos Recientes', bookmarks: 'Tus Marcadores', ai_security: 'Noticias de Seguridad IA' },
     buttons: { copy_brief: 'Copiar informe', regenerate: 'Regenerar', load_more: 'Cargar más', read: 'Leer', bookmark: 'Guardar', share: 'Compartir' },
-    chip: { threat: 'Amenaza', defense: 'Defensa', intel: 'Inteligencia' },
+    chip: { threat: 'Amenaza', defense: 'Defensa', intel: 'Inteligencia', ai: 'Seguridad IA' },
     footer: { attribution: 'Agregado de varios RSS. El contenido pertenece a sus propietarios.', proxy: 'Usa proxies CORS públicos para obtener RSS en el navegador.' }
   },
   fr: {
     app: { title: 'Hub des Actualités Cybersécurité', subtitle: 'Votre synthèse quotidienne des menaces et renseignements' },
-    nav: { bookmarks: 'Favoris' },
-    tools: { search_placeholder: 'Rechercher titres, descriptions, sources…', sort_newest: 'Plus récents', sort_oldest: 'Plus anciens', sort_source: 'Source A-Z' },
-    sections: { brief: 'Brief Quotidien', trending: 'Tendance', latest: 'Derniers Articles', bookmarks: 'Vos Favoris' },
+    nav: { bookmarks: 'Favoris', ai_security: 'Sécurité IA' },
+    tools: { search_placeholder: 'Rechercher titres, descriptions, sources…', sort_newest: 'Plus récents', sort_oldest: 'Plus anciens', sort_source: 'Source A-Z', filter_all: 'Tout', filter_ai: 'Sécurité IA', filter_threat: 'Menaces', filter_defense: 'Défense', filter_intel: 'Renseignement' },
+    sections: { brief: 'Brief Quotidien', trending: 'Tendance', latest: 'Derniers Articles', bookmarks: 'Vos Favoris', ai_security: 'Actualités Sécurité IA' },
     buttons: { copy_brief: 'Copier le brief', regenerate: 'Régénérer', load_more: 'Voir plus', read: 'Lire', bookmark: 'Enregistrer', share: 'Partager' },
-    chip: { threat: 'Menace', defense: 'Défense', intel: 'Renseignement' },
+    chip: { threat: 'Menace', defense: 'Défense', intel: 'Renseignement', ai: 'Sécurité IA' },
     footer: { attribution: 'Agrégé de divers flux RSS. Contenu appartenant à leurs propriétaires.', proxy: 'Utilise des proxys CORS publics pour récupérer les flux RSS.' }
   },
   de: {
     app: { title: 'Cybersecurity News Hub', subtitle: 'Ihr täglicher Überblick zu Bedrohungen und Intelligence' },
-    nav: { bookmarks: 'Lesezeichen' },
-    tools: { search_placeholder: 'Suche in Titeln, Beschreibungen, Quellen…', sort_newest: 'Neueste zuerst', sort_oldest: 'Älteste zuerst', sort_source: 'Quelle A-Z' },
-    sections: { brief: 'Tagesbriefing', trending: 'Im Trend', latest: 'Neueste Artikel', bookmarks: 'Ihre Lesezeichen' },
+    nav: { bookmarks: 'Lesezeichen', ai_security: 'KI-Sicherheit' },
+    tools: { search_placeholder: 'Suche in Titeln, Beschreibungen, Quellen…', sort_newest: 'Neueste zuerst', sort_oldest: 'Älteste zuerst', sort_source: 'Quelle A-Z', filter_all: 'Alle', filter_ai: 'KI-Sicherheit', filter_threat: 'Bedrohungen', filter_defense: 'Abwehr', filter_intel: 'Intel' },
+    sections: { brief: 'Tagesbriefing', trending: 'Im Trend', latest: 'Neueste Artikel', bookmarks: 'Ihre Lesezeichen', ai_security: 'KI-Sicherheitsnachrichten' },
     buttons: { copy_brief: 'Brief kopieren', regenerate: 'Neu erstellen', load_more: 'Mehr laden', read: 'Lesen', bookmark: 'Speichern', share: 'Teilen' },
-    chip: { threat: 'Bedrohung', defense: 'Abwehr', intel: 'Intel' },
+    chip: { threat: 'Bedrohung', defense: 'Abwehr', intel: 'Intel', ai: 'KI-Sicherheit' },
     footer: { attribution: 'Aggregiert aus verschiedenen RSS-Feeds. Inhalte gehören den Eigentümern.', proxy: 'Verwendet öffentliche CORS-Proxys, um RSS im Browser abzurufen.' }
   },
   ar: {
     app: { title: 'مركز أخبار الأمن السيبراني', subtitle: 'ملخصك اليومي للتهديدات والاستخبارات' },
-    nav: { bookmarks: 'المحفوظات' },
-    tools: { search_placeholder: 'ابحث في العناوين والأوصاف والمصادر…', sort_newest: 'الأحدث أولاً', sort_oldest: 'الأقدم أولاً', sort_source: 'المصدر A-Z' },
-    sections: { brief: 'الموجز اليومي', trending: 'الرائج الآن', latest: 'أحدث المقالات', bookmarks: 'محفوظاتك' },
+    nav: { bookmarks: 'المحفوظات', ai_security: 'أمن الذكاء الاصطناعي' },
+    tools: { search_placeholder: 'ابحث في العناوين والأوصاف والمصادر…', sort_newest: 'الأحدث أولاً', sort_oldest: 'الأقدم أولاً', sort_source: 'المصدر A-Z', filter_all: 'الكل', filter_ai: 'أمن الذكاء الاصطناعي', filter_threat: 'التهديدات', filter_defense: 'الدفاع', filter_intel: 'الاستخبارات' },
+    sections: { brief: 'الموجز اليومي', trending: 'الرائج الآن', latest: 'أحدث المقالات', bookmarks: 'محفوظاتك', ai_security: 'أخبار أمن الذكاء الاصطناعي' },
     buttons: { copy_brief: 'نسخ الموجز', regenerate: 'إعادة توليد', load_more: 'تحميل المزيد', read: 'قراءة', bookmark: 'حفظ', share: 'مشاركة' },
-    chip: { threat: 'تهديد', defense: 'دفاع', intel: 'استخبارات' },
+    chip: { threat: 'تهديد', defense: 'دفاع', intel: 'استخبارات', ai: 'أمن الذكاء الاصطناعي' },
     footer: { attribution: 'تم التجميع من خلاصات RSS مختلفة. المحتوى يعود لمالكيه.', proxy: 'يستخدم بروكسيات CORS عامة لجلب الخلاصات في المتصفح.' }
   }
 };
@@ -69,6 +69,7 @@ const state = {
   page: 0,
   pageSize: 18,
   filters: new Set(),
+  categoryFilter: 'all', // all, ai, threat, defense, intel
   search: '',
   sort: 'newest',
   bookmarks: new Set(JSON.parse(localStorage.getItem('csnh-bookmarks') || '[]')),
@@ -102,9 +103,17 @@ const FEEDS = [
   // government advisories (availability may vary by region/CORS)
   { name: 'CISA Current Activity', url: 'https://www.cisa.gov/sites/default/files/feeds/current_activity.xml' },
   { name: 'CISA Alerts', url: 'https://www.cisa.gov/sites/default/files/feeds/alerts.xml' },
+
+  // AI Security sources
+  { name: 'OpenAI Safety Blog', url: 'https://openai.com/blog/rss.xml' },
+  { name: 'DeepMind Safety', url: 'https://deepmind.google/blog/rss.xml' },
+  { name: 'AI Incidents Database', url: 'https://incidentdatabase.ai/blog/rss.xml' },
+  { name: 'Anthropic Research', url: 'https://www.anthropic.com/research/rss.xml' },
+  { name: 'AI Village', url: 'https://aivillage.org/feed/' },
 ];
 
 const CLASSIFY = {
+  ai: [/\bai\b/i, /artificial intelligence/i, /machine learning/i, /deep learning/i, /llm/i, /large language model/i, /gpt/i, /chatgpt/i, /neural network/i, /model training/i, /ai safety/i, /alignment/i, /prompt injection/i, /adversarial/i, /deepfake/i, /synthetic media/i, /model poisoning/i, /data poisoning/i, /ai security/i, /ml security/i],
   threat: [/hack/i, /breach/i, /ransom/i, /ransomware/i, /exploit/i, /malware/i, /ddos/i, /phishing/i, /attack/i, /compromis/i, /exfiltrat/i, /zero-?day/i, /botnet/i, /data leak/i],
   defense: [/mitigat/i, /patch/i, /update/i, /secure/i, /defen[cs]e/i, /blue team/i, /detect/i, /edr/i, /mfa/i, /hardening/i, /enforc/i, /encrypt/i],
   intel: [/advisory/i, /cve/i, /vulnerab/i, /research/i, /intel/i, /report/i, /bulletin/i, /proof[- ]of[- ]concept/i, /poc/i]
@@ -160,6 +169,17 @@ function translateUI() {
     for (const [val, label] of opts) { const o = document.createElement('option'); o.value = val; o.textContent = label; sort.appendChild(o); }
     sort.value = state.sort;
   }
+
+  // Category filter buttons
+  els('.category-btn').forEach(btn => {
+    const cat = btn.getAttribute('data-category');
+    if (cat === 'all') btn.textContent = t('tools.filter_all');
+    else if (cat === 'ai') btn.textContent = '🤖 ' + t('tools.filter_ai');
+    else if (cat === 'threat') btn.textContent = '🔥 ' + t('tools.filter_threat');
+    else if (cat === 'defense') btn.textContent = '🛡️ ' + t('tools.filter_defense');
+    else if (cat === 'intel') btn.textContent = '📊 ' + t('tools.filter_intel');
+  });
+
   const briefTitle = el('#briefTitle'); if (briefTitle) briefTitle.textContent = t('sections.brief');
   const highlightsTitle = el('#highlightsTitle'); if (highlightsTitle) highlightsTitle.textContent = t('sections.trending');
   const latestTitle = el('#latestTitle'); if (latestTitle) latestTitle.textContent = t('sections.latest');
@@ -251,10 +271,11 @@ function card(item) {
   const a = document.createElement('article');
   const ctx = item.context || 'intel';
   a.className = `card card--${ctx}`;
+  const chipLabel = ctx === 'ai' ? t('chip.ai') : ctx === 'threat' ? t('chip.threat') : ctx === 'defense' ? t('chip.defense') : t('chip.intel');
   a.innerHTML = `
     <h3><a href="${item.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
     <div class="meta">
-      <span class="chip ${ctx}">${ctx === 'threat' ? t('chip.threat') : ctx === 'defense' ? t('chip.defense') : t('chip.intel')}</span>
+      <span class="chip ${ctx}">${chipLabel}</span>
       <span>${escapeHtml(item.source)}</span><span>•</span><span>${formatDate(item.pubDate)}</span>
     </div>
     <div class="desc">${escapeHtml(item.description)}</div>
@@ -319,7 +340,11 @@ function renderTrending() {
 }
 
 function applyFilters(items) {
-  return items.filter(i => state.filters.size === 0 || state.filters.has(i.source));
+  let filtered = items.filter(i => state.filters.size === 0 || state.filters.has(i.source));
+  if (state.categoryFilter !== 'all') {
+    filtered = filtered.filter(i => i.context === state.categoryFilter);
+  }
+  return filtered;
 }
 
 function applySearch(items) {
@@ -404,6 +429,20 @@ function initControls() {
   window.addEventListener('hashchange', renderBookmarks);
   el('#regenBriefBtn').addEventListener('click', () => renderBrief(state.allItems));
   el('#copyBriefBtn').addEventListener('click', () => copyBrief());
+
+  // Category filter buttons
+  els('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category');
+      state.categoryFilter = category;
+      state.page = 0;
+      els('.category-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyAndRender();
+      renderBrief(state.allItems);
+    });
+  });
+
   const detected = (localStorage.getItem('csnh-lang') || navigator.language || 'en').slice(0,2).toLowerCase();
   setLanguage(SUPPORTED_LOCALES.includes(detected) ? detected : 'en');
   const sel = el('#langSelect');
@@ -437,6 +476,7 @@ function renderBrief(all) {
   const date = new Date();
   const items = applySort(applySearch(applyFilters(all)));
   const byCtx = (ctx, n) => items.filter(i=>i.context===ctx).slice(0,n);
+  const topAI = byCtx('ai', 5);
   const topThreat = byCtx('threat', 6);
   const topDefense = byCtx('defense', 5);
   const topIntel = byCtx('intel', 5);
@@ -447,10 +487,11 @@ function renderBrief(all) {
 
   elC.innerHTML = `
     <h3>Cybersecurity Daily Brief — ${date.toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'})}</h3>
-    <p>A concise roundup of notable incidents, defensive updates, and vulnerability intelligence from trusted sources.</p>
-    ${section('Major Incidents & Threat Activity', topThreat)}
-    ${section('Defensive Updates & Guidance', topDefense)}
-    ${section('Vulnerability & Research Intel', topIntel)}
+    <p>A concise roundup of notable incidents, defensive updates, vulnerability intelligence, and AI security news from trusted sources.</p>
+    ${section('🤖 AI Security & Research', topAI)}
+    ${section('🔥 Major Incidents & Threat Activity', topThreat)}
+    ${section('🛡️ Defensive Updates & Guidance', topDefense)}
+    ${section('📊 Vulnerability & Research Intel', topIntel)}
     <h3>Key Trends</h3>
     <p>${trends.map(t=>`<span class="badge">#${escapeHtml(t.label)}</span>`).join(' ') || '—'}</p>
     <h3>Top Sources Today</h3>
